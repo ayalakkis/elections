@@ -1,0 +1,17 @@
+{% extends 'portal/base.html' %}
+{% block title %}Your ballot · {{ title }}{% endblock %}
+{% block main %}
+<div class="wrap">
+  <div class="vote-layout">
+    <aside class="card ballot-nav" aria-label="Ballot progress">
+      <div class="faint" style="font-size:13px;font-weight:600">Hello {{ voter_name }}</div>
+      <div style="font-weight:700;font-size:17px;margin-top:2px">Your ballot</div>
+      <div class="progress" aria-hidden="true"><i id="progress" style="width:0"></i></div>
+      <ol id="steps"></ol>
+      <p class="hint" style="margin-top:14px;display:flex;gap:8px"><svg style="width:16px;height:16px;flex:none;margin-top:2px"><use href="#i-shield"/></svg>Nothing is sent until you sign on the last step.</p>
+    </aside>
+    <section id="stage" aria-live="polite"></section>
+  </div>
+</div>
+{% endblock %}
+{% block data %}{{ ballot|json_script:"ballot-data" }}{% endblock %}

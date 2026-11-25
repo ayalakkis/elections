@@ -1,0 +1,33 @@
+{% extends 'portal/base.html' %}
+{% block title %}Control room · {{ title }}{% endblock %}
+{% block main %}
+<div class="wrap">
+  <div class="spread" style="margin-bottom:20px">
+    <div>
+      <div class="section-title" style="margin-bottom:6px">Control room</div>
+      <h1 style="font-size:36px;font-weight:760">Ledger health</h1>
+    </div>
+    <span class="chip chip-neutral" id="updated"><span class="dot live" style="color:var(--ok)"></span> Live</span>
+  </div>
+  <div id="banner"></div>
+  <div class="nodes" id="nodes" style="margin-top:20px"></div>
+  <div class="grid split" style="margin-top:20px">
+    <div class="card network-card"><h3 style="font-size:16px;position:relative">Network</h3><svg class="network" id="network" viewBox="0 0 420 380" role="img" aria-label="Network status"></svg></div>
+    <div class="card"><div class="card-head"><h3>Activity</h3><span class="faint" style="font-size:13px">Changes since you opened this page</span></div><ul class="feed" id="feed"></ul></div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="card-head"><h3>Ledger vs website database</h3><span id="match-chip"></span></div>
+    <div style="overflow-x:auto"><table class="data" id="compare"></table></div>
+  </div>
+  <div class="card card-pad" style="margin-top:20px">
+    <h3 style="font-size:16px;margin-bottom:10px">Demonstration script</h3>
+    <ol class="muted" style="margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px">
+      <li>Sign in as a student in another browser window and vote. Watch a new block appear here and on every node.</li>
+      <li>Close one node's window, then vote again: the vote is still recorded. Start the node again and watch it catch up.</li>
+      <li>Press <b>Tamper a ballot</b> on one node: it turns red, and the official result still comes from the other two.</li>
+      <li>Reset the votes in the classic admin: the website count drops to zero, but the ledger keeps every ballot.</li>
+    </ol>
+  </div>
+</div>
+{% endblock %}
+{% block data %}{{ labels|json_script:"labels-data" }}{% endblock %}

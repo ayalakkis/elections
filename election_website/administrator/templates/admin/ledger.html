@@ -1,0 +1,110 @@
+{% extends 'root.html' %}
+{% block content %}
+<section class="content">
+
+  <div class="callout callout-info">
+    <p>Every ballot is signed and copied to three independent ledger nodes, one per party. This page downloads all three copies,
+       checks every hash, link and signature, and takes the official result from the majority. It then compares that result
+       with the website's own database.</p>
+  </div>
+
+  <!-- The three nodes -->
+  <div class="row">
+    {% for node in nodes %}
+    <div class="col-md-4">
+      <div class="box {% if node.status == 'VALID' %}box-success{% elif node.status == 'TAMPERED' %}box-danger{% else %}box-warning{% endif %}">
+        <div class="box-header with-border">
+          <h3 class="box-title"><b>{{ node.name|capfirst }} node</b></h3>
+          <span class="pull-right label {% if node.status == 'VALID' %}label-success{% elif node.status == 'TAMPERED' %}label-danger{% else %}label-warning{% endif %}" style="font-size:13px">{{ node.status }}</span>
+        </div>
+        <div class="box-body">
+          <p class="text-muted" style="margin-bottom:6px">{{ node.url }}</p>
+          <p><b>{{ node.blocks }}</b> blocks, <b>{{ node.ballots }}</b> ballots</p>
+          <p>{{ node.reason }}</p>
+          {% if node.tip %}<p class="text-muted"><small>Last block hash: <code>{{ node.tip }}...</code></small></p>{% endif %}
+        </div>
+        {% if node.status != 'DOWN' %}
+        <div class="box-footer">
+          <form method="POST" action="{% url 'ledgerTamper' %}" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="node" value="{{ node.name }}">
+            <button class="btn btn-default btn-xs btn-flat" type="submit">Demo: tamper this copy</button>
+          </form>
+          <form method="POST" action="{% url 'ledgerTamper' %}" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="node" value="{{ node.name }}"><input type="hidden" name="rehash" value="1">
+            <button class="btn btn-default btn-xs btn-flat" type="submit">Demo: tamper and recompute hashes</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Official result vs the website database -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title"><b>Official result from the ledger majority</b></h3>
+          <span class="pull-right">
+          {% if majority %}
+            {% if all_match %}<span class="label label-success" style="font-size:13px">Website database matches the ledger</span>
+            {% else %}<span class="label label-danger" style="font-size:13px">Website database differs from the ledger</span>{% endif %}
+          {% else %}<span class="label label-danger" style="font-size:13px">No majority: the result cannot be confirmed</span>{% endif %}
+          </span>
+        </div>
+        <div class="box-body">
+          <p>{% if majority %}Agreeing nodes: <b>{{ majority|join:", " }}</b>. {% endif %}
+             Ballots on the ledger: <b>{{ ballots_on_ledger }}</b>. Voters marked as voted in the website database: <b>{{ voted_on_website }}</b>.</p>
+          <table class="table table-bordered">
+            <thead><tr><th>Position</th><th>Candidate</th><th>Votes on the ledger (official)</th><th>Votes in the website database</th><th>Check</th></tr></thead>
+            <tbody>
+            {% for r in rows %}
+              <tr {% if majority and not r.match %}class="danger"{% endif %}>
+                <td>{{ r.position }}</td><td>{{ r.candidate }}</td>
+                <td>{% if r.ledger is None %}unknown{% else %}<b>{{ r.ledger }}</b>{% endif %}</td>
+                <td>{{ r.website }}</td>
+                <td>{% if r.ledger is None %}<span class="label label-default">no majority</span>{% elif r.match %}<span class="label label-success">same</span>{% else %}<span class="label label-danger">different</span>{% endif %}</td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="5">No candidates yet.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Block explorer -->
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title"><b>Blockchain explorer</b></h3>
+          <span class="pull-right text-muted">{{ block_count }} blocks, newest first{% if block_count > 15 %} (last 15 shown){% endif %}</span>
+        </div>
+        <div class="box-body table-responsive">
+          <table class="table table-bordered table-condensed" style="font-size:13px">
+            <thead><tr><th>Block</th><th>Time</th><th>Voter key</th><th>Choices</th><th>Hash</th><th>Previous hash</th></tr></thead>
+            <tbody>
+            {% for b in blocks %}
+              <tr>
+                <td><b>{{ b.index }}</b></td><td>{{ b.time }}</td>
+                <td>{% for v in b.voters %}<code>{{ v }}...</code>{% empty %}<span class="text-muted">none</span>{% endfor %}</td>
+                <td>{{ b.choices|join:", " }}</td>
+                <td><code>{{ b.hash|slice:":16" }}...</code></td>
+                <td><code>{{ b.prev_hash|slice:":16" }}...</code></td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="6">No valid copy of the chain is available.</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <p class="text-muted"><small>Each block stores the hash of the block before it. Changing any old ballot changes its hash and breaks every link after it.</small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

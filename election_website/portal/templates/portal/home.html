@@ -1,0 +1,55 @@
+{% extends 'portal/base.html' %}
+{% block main %}
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow"><span class="dot live" style="color:var(--ok)"></span> Live election · {{ title }}</span>
+      <h1>Every vote is signed, and kept by <em>three independent guardians</em>.</h1>
+      <p class="lead">The Ministry, the Supervisory Commission and the candidates' delegates each hold a full copy of the ballots. No single party can change the result without the other copies showing it.</p>
+      <div class="cta">
+        {% if role == '2' %}
+          {% if user.voter.voted %}<a class="btn btn-primary btn-lg" href="{% url 'portal_receipt' %}">View my receipt <svg><use href="#i-right"/></svg></a>
+          {% else %}<a class="btn btn-primary btn-lg" href="{% url 'portal_vote' %}">Cast my ballot <svg><use href="#i-right"/></svg></a>{% endif %}
+        {% elif role == '1' %}
+          <a class="btn btn-primary btn-lg" href="{% url 'portal_control' %}">Open the control room <svg><use href="#i-right"/></svg></a>
+        {% else %}
+          <a class="btn btn-primary btn-lg" href="{% url 'portal_signin' %}">Sign in to vote <svg><use href="#i-right"/></svg></a>
+        {% endif %}
+        <a class="btn btn-ghost btn-lg" href="{% url 'portal_results' %}">Live results</a>
+      </div>
+      <div class="kpis" id="kpis">
+        <div class="kpi"><b data-k="turnout">–</b><span>Turnout</span></div>
+        <div class="kpi"><b data-k="ballots">–</b><span>Ballots on the ledger</span></div>
+        <div class="kpi"><b data-k="blocks">–</b><span>Blocks in the chain</span></div>
+        <div class="kpi"><b data-k="nodes">–</b><span>Copies in agreement</span></div>
+      </div>
+    </div>
+    <div class="card network-card">
+      <div class="spread" style="position:relative">
+        <h3 style="font-size:16px">The ledger network, live</h3>
+        <span class="chip chip-neutral" id="net-status"><span class="dot"></span> Connecting</span>
+      </div>
+      <svg class="network" id="network" viewBox="0 0 420 380" role="img" aria-label="Three ledger nodes and their status"></svg>
+      <div class="legend"><span><i class="dot" style="color:var(--ok)"></i> Valid copy</span><span><i class="dot" style="color:var(--bad)"></i> Tampered</span><span><i class="dot" style="color:var(--ink-3)"></i> Offline</span></div>
+    </div>
+  </section>
+
+  <section style="margin-top:8px">
+    <div class="section-title">How your vote is protected</div>
+    <div class="steps">
+      <div class="card step"><div class="n">1</div><h3>You sign it</h3><p>Your ballot is signed with your own Ed25519 key. Nobody can change it, or vote in your name.</p></div>
+      <div class="card step"><div class="n">2</div><h3>Three parties receive it</h3><p>It is sent to all three nodes at once, so no single party can hide it.</p></div>
+      <div class="card step"><div class="n">3</div><h3>It is chained</h3><p>Each block holds the fingerprint of the one before it. Editing an old vote breaks every link after it.</p></div>
+      <div class="card step"><div class="n">4</div><h3>The majority decides</h3><p>The official result comes from the copies that agree, two out of three.</p></div>
+    </div>
+  </section>
+
+  <section style="margin-top:40px">
+    <div class="spread" style="margin-bottom:12px">
+      <div class="section-title" style="margin:0">Latest blocks</div>
+      <a href="{% url 'portal_explorer' %}">Open the ledger explorer →</a>
+    </div>
+    <div class="chain" id="chain-strip"><div class="skeleton" style="width:100%;height:110px"></div></div>
+  </section>
+</div>
+{% endblock %}

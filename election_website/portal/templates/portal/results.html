@@ -1,0 +1,16 @@
+{% extends 'portal/base.html' %}
+{% block title %}Results · {{ title }}{% endblock %}
+{% block main %}
+<div class="wrap">
+  <div class="spread" style="margin-bottom:24px">
+    <div>
+      <div class="section-title" style="margin-bottom:6px">Live results</div>
+      <h1 style="font-size:36px;font-weight:760">{{ title }}</h1>
+    </div>
+    <div class="row wrap-ok" id="result-chips"></div>
+  </div>
+  <div class="card card-pad" id="turnout-card"><div class="skeleton" style="height:112px"></div></div>
+  <div class="results-grid" id="results" style="margin-top:20px"></div>
+  <p class="faint" style="margin-top:20px;font-size:13px">Counts come from the copies of the ledger that agree (the majority), not from the website's database. The page refreshes by itself.</p>
+</div>
+{% endblock %}

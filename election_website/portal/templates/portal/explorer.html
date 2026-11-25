@@ -1,0 +1,16 @@
+{% extends 'portal/base.html' %}
+{% block title %}Ledger explorer · {{ title }}{% endblock %}
+{% block main %}
+<div class="wrap">
+  <div class="spread" style="margin-bottom:20px;align-items:flex-end">
+    <div>
+      <div class="section-title" style="margin-bottom:6px">Ledger explorer</div>
+      <h1 style="font-size:36px;font-weight:760">Every block, every signature</h1>
+      <p class="muted" style="margin-top:8px;max-width:640px">This is the chain that the majority of nodes agree on. Select a block to see its ballots, the voter's public key and the signature that proves the ballot was not changed.</p>
+    </div>
+    <label class="search"><span class="sr-only">Find a block or voter key</span><svg><use href="#i-search"/></svg><input id="find" placeholder="Block number or voter key" autocomplete="off"></label>
+  </div>
+  <div class="card" style="padding:16px 12px 4px"><div class="chain" id="chain"><div class="skeleton" style="width:100%;height:110px"></div></div></div>
+  <div class="card detail" id="detail" style="margin-top:20px"></div>
+</div>
+{% endblock %}

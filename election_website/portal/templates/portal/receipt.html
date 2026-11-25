@@ -1,0 +1,8 @@
+{% extends 'portal/base.html' %}
+{% block title %}Your receipt · {{ title }}{% endblock %}
+{% block main %}
+<div class="wrap" style="max-width:820px">
+  <div id="receipt-root"></div>
+</div>
+{% endblock %}
+{% block data %}{{ receipt|json_script:"receipt-data" }}{{ voter_name|json_script:"voter-name" }}{% endblock %}
